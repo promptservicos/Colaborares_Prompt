@@ -60,6 +60,8 @@ navItems.forEach(item => {
     if (tabId === 'presenca') {
       atualizarDataHoje();
     }
+    // Se estiver no mobile, fechar o filtro ao mudar de aba
+    fecharFiltroMobile();
   });
 });
 
@@ -92,6 +94,7 @@ function iniciar() {
   carregarFuncionarios();
   carregarPresenca();
   setupFiltros();
+  setupMobileFilters(); // Ativa o botão de filtro no mobile
 }
 
 // ---------- POSTOS ----------
@@ -518,7 +521,7 @@ function atualizarSelectPostos() {
 }
 
 function atualizarSelectJornadas() {
-  // Atualiza select de jornada no formulário de funcionário? Já é feito sob demanda.
+  // Não é necessário para filtros, apenas para o formulário
 }
 
 function setupFiltros() {
@@ -650,4 +653,51 @@ async function excluirHandler(e) {
   } catch (error) {
     alert('Erro ao excluir: ' + error.message);
   }
+}
+
+// ---------- FUNÇÕES PARA MOBILE (FILTRO OCULTO) ----------
+function setupMobileFilters() {
+  // Adiciona botão de filtro em cada barra de filtros (apenas para mobile via CSS)
+  const filtrosBars = document.querySelectorAll('.filtros-bar');
+  
+  filtrosBars.forEach(bar => {
+    // Verifica se já existe botão para não duplicar
+    if (bar.querySelector('.btn-filtro-mobile')) return;
+
+    const filtrosDiv = bar.querySelector('.filtros');
+    if (!filtrosDiv) return;
+
+    // Cria botão de filtro
+    const btnFiltro = document.createElement('div');
+    btnFiltro.className = 'btn-filtro-mobile';
+    btnFiltro.innerHTML = '<i class="fas fa-filter"></i>';
+    
+    // Insere antes ou depois da search-box? Vamos colocar após a search-box
+    const searchBox = bar.querySelector('.search-box');
+    if (searchBox) {
+      searchBox.insertAdjacentElement('afterend', btnFiltro);
+    } else {
+      bar.appendChild(btnFiltro);
+    }
+
+    // Evento de clique para mostrar/esconder os filtros
+    btnFiltro.addEventListener('click', (e) => {
+      e.stopPropagation();
+      filtrosDiv.classList.toggle('show');
+      btnFiltro.classList.toggle('active');
+    });
+
+    // Opcional: clicar fora para fechar (em dispositivos móveis)
+    document.addEventListener('click', (e) => {
+      if (!bar.contains(e.target)) {
+        filtrosDiv.classList.remove('show');
+        btnFiltro.classList.remove('active');
+      }
+    });
+  });
+}
+
+function fecharFiltroMobile() {
+  document.querySelectorAll('.filtros').forEach(f => f.classList.remove('show'));
+  document.querySelectorAll('.btn-filtro-mobile').forEach(b => b.classList.remove('active'));
 }

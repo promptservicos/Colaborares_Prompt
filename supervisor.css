@@ -452,11 +452,11 @@ tr:last-child td {
   color: #155724;
 }
 
-/* ==================== */
-/* ESTILOS PARA MOBILE  */
-/* ==================== */
+/* ============================================ */
+/* ESTILOS PARA MOBILE (até 768px)              */
+/* ============================================ */
 @media (max-width: 768px) {
-  /* Transforma sidebar em bottom navigation */
+  /* Sidebar vira top navigation */
   .dashboard {
     flex-direction: column;
   }
@@ -466,13 +466,13 @@ tr:last-child td {
     height: auto;
     padding: 0.5rem;
     border-right: none;
-    border-top: 1px solid #eaeaea;
-    order: 2; /* Coloca a sidebar embaixo do conteúdo */
-    box-shadow: 0 -4px 10px rgba(0,0,0,0.02);
+    border-bottom: 1px solid #eaeaea;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+    order: 0; /* No topo */
   }
 
   .sidebar-header {
-    display: none; /* Oculta o título na versão mobile */
+    display: none; /* Oculta o título */
   }
 
   .sidebar-nav {
@@ -484,7 +484,7 @@ tr:last-child td {
   .nav-item {
     flex: 1;
     flex-direction: column;
-    padding: 0.5rem 0.2rem;
+    padding: 0.4rem 0.2rem;
     border-radius: 0.8rem;
     font-size: 0.7rem;
     gap: 0.2rem;
@@ -503,17 +503,16 @@ tr:last-child td {
   }
 
   .logout-btn {
-    display: none; /* Oculta botão de logout na bottom nav (pode ser incluído como item extra se quiser) */
+    display: none; /* Esconde botão de logout na top nav (opcional) */
   }
 
-  /* Conteúdo principal ocupa o resto da tela */
+  /* Conteúdo principal ocupa o resto */
   .content {
     padding: 1rem;
-    overflow-y: auto;
-    height: calc(100vh - 70px); /* Altura total menos altura da bottom nav */
+    height: calc(100vh - 60px); /* Altura total menos altura da top nav */
   }
 
-  /* Cabeçalhos menores */
+  /* Cabeçalhos */
   .content-header h2 {
     font-size: 1.4rem;
   }
@@ -523,47 +522,74 @@ tr:last-child td {
     padding: 0.2rem 0.6rem;
   }
 
-  /* Botão novo maior para toque */
   .btn-novo {
     padding: 0.6rem 1.2rem;
     font-size: 0.9rem;
   }
 
-  /* Filtros ocupam toda largura e com padding maior */
+  /* Barra de filtros: search e botão filtro lado a lado */
   .filtros-bar {
-    flex-direction: column;
-    align-items: stretch;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
     padding: 0.8rem;
   }
 
   .search-box {
-    width: 100%;
-    min-width: auto;
+    flex: 1;
+    min-width: 0;
   }
 
+  /* Botão de filtro */
+  .btn-filtro-mobile {
+    background: #f0f0f0;
+    border: 1px solid #e0e0e0;
+    border-radius: 2rem;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    color: #C10404;
+    cursor: pointer;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+
+  .btn-filtro-mobile.active {
+    background: #C10404;
+    color: white;
+    border-color: #C10404;
+  }
+
+  /* Filtros (selects) ocultos por padrão */
   .filtros {
+    display: none;
+    width: 100%;
     flex-direction: column;
     gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+
+  .filtros.show {
+    display: flex;
   }
 
   .filtros select {
     width: 100%;
-    min-width: auto;
-    padding: 0.8rem 1rem; /* Maior área de toque */
+    padding: 0.8rem 1rem;
+    font-size: 1rem;
   }
 
-  /* Cards com padding reduzido e bordas mais suaves */
+  /* Cards e formulários */
   .form-card, .list-card {
     padding: 1rem;
     border-radius: 1.2rem;
   }
 
-  .form-card h3, .list-card h3 {
-    font-size: 1rem;
-    margin-bottom: 1rem;
-  }
-
-  /* Formulários em tela cheia quando abertos */
+  /* Formulários em tela cheia */
   .form-card {
     position: fixed;
     top: 0;
@@ -587,7 +613,6 @@ tr:last-child td {
     background: white;
   }
 
-  /* Ajustes nos campos do formulário */
   .form-group input, .form-group select {
     padding: 0.8rem 1rem;
     font-size: 1rem;
@@ -598,16 +623,11 @@ tr:last-child td {
     padding: 0.8rem;
   }
 
-  .dias-checkbox label {
-    font-size: 0.9rem;
-  }
-
   .form-row {
     flex-direction: column;
     gap: 0;
   }
 
-  /* Tabelas com fonte um pouco menor mas ainda legível */
   table {
     font-size: 0.8rem;
   }
@@ -621,38 +641,25 @@ tr:last-child td {
     font-size: 1.2rem;
   }
 
-  /* Status com padding adequado */
   .status {
     padding: 0.2rem 0.6rem;
     font-size: 0.7rem;
   }
-
-  /* Ajuste no botão cancelar dentro do formulário em tela cheia */
-  .btn-cancelar {
-    background: #f0f0f0;
-  }
 }
 
-/* Ajuste para telas muito pequenas (menos de 400px) */
+/* Telas muito pequenas */
 @media (max-width: 400px) {
   .nav-item span {
     font-size: 0.6rem;
   }
-
   .nav-item i {
     font-size: 1.2rem;
   }
-
   .content-header h2 {
     font-size: 1.2rem;
   }
-
   .btn-novo {
     padding: 0.5rem 1rem;
     font-size: 0.8rem;
-  }
-
-  #dataHoje {
-    font-size: 0.9rem;
   }
 }
