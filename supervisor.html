@@ -23,10 +23,6 @@
           <i class="fas fa-map-marker-alt"></i>
           <span>Postos</span>
         </button>
-        <button class="nav-item" data-tab="jornadas">
-          <i class="fas fa-calendar-alt"></i>
-          <span>Jornada de Trabalho</span>
-        </button>
         <button class="nav-item" data-tab="presenca">
           <i class="fas fa-clock"></i>
           <span>Registro de Presença</span>
@@ -55,15 +51,7 @@
             <select id="filtroPostoFunc">
               <option value="">Todos os postos</option>
             </select>
-            <select id="filtroFuncaoFunc">
-              <option value="">Todas as funções</option>
-              <option value="Limpeza">Limpeza</option>
-              <option value="Portaria">Portaria</option>
-              <option value="Promotor">Promotor</option>
-              <option value="Segurança">Segurança</option>
-              <option value="Recepção">Recepção</option>
-              <option value="Supervisão">Supervisão</option>
-            </select>
+            <input type="text" id="filtroFuncaoFunc" placeholder="Filtrar por função">
           </div>
         </div>
 
@@ -88,23 +76,36 @@
               </div>
               <div class="form-group">
                 <label><i class="fas fa-tasks"></i> Função</label>
-                <select id="funcFuncao" required>
-                  <option value="">Selecione</option>
-                  <option value="Limpeza">Limpeza</option>
-                  <option value="Portaria">Portaria</option>
-                  <option value="Promotor">Promotor</option>
-                  <option value="Segurança">Segurança</option>
-                  <option value="Recepção">Recepção</option>
-                  <option value="Supervisão">Supervisão</option>
-                </select>
+                <input type="text" id="funcFuncao" placeholder="Ex: Segurança" required>
               </div>
             </div>
+
+            <!-- JORNADA DE TRABALHO (agora dentro do funcionário) -->
             <div class="form-group">
-              <label><i class="fas fa-clock"></i> Jornada</label>
-              <select id="funcJornada" required>
-                <option value="">Selecione</option>
-              </select>
+              <label><i class="fas fa-calendar-day"></i> Dias da semana</label>
+              <div class="dias-botoes" id="diasBotoes">
+                <button type="button" class="dia-btn" data-dia="seg">Seg</button>
+                <button type="button" class="dia-btn" data-dia="ter">Ter</button>
+                <button type="button" class="dia-btn" data-dia="qua">Qua</button>
+                <button type="button" class="dia-btn" data-dia="qui">Qui</button>
+                <button type="button" class="dia-btn" data-dia="sex">Sex</button>
+                <button type="button" class="dia-btn" data-dia="sab">Sáb</button>
+                <button type="button" class="dia-btn" data-dia="dom">Dom</button>
+              </div>
+              <input type="hidden" id="funcDias" value="">
             </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label><i class="fas fa-clock"></i> Início</label>
+                <input type="text" id="funcInicio" placeholder="Ex: 0800" maxlength="5" required>
+              </div>
+              <div class="form-group">
+                <label><i class="fas fa-clock"></i> Fim</label>
+                <input type="text" id="funcFim" placeholder="Ex: 1800" maxlength="5" required>
+              </div>
+            </div>
+
             <div class="form-actions">
               <button type="submit" class="btn-salvar"><i class="fas fa-save"></i> Salvar</button>
               <button type="button" class="btn-cancelar" id="cancelarFuncionario"><i class="fas fa-times"></i> Cancelar</button>
@@ -186,71 +187,6 @@
         </div>
       </section>
 
-      <!-- Aba Jornadas -->
-      <section id="tab-jornadas" class="tab-content">
-        <div class="content-header">
-          <h2><i class="fas fa-calendar-alt" style="color: #C10404;"></i> Jornadas de Trabalho</h2>
-          <button class="btn-novo" id="novaJornadaBtn"><i class="fas fa-plus"></i> Nova Jornada</button>
-        </div>
-
-        <div class="filtros-bar">
-          <div class="search-box">
-            <i class="fas fa-search"></i>
-            <input type="text" id="searchJornadas" placeholder="Pesquisar por descrição...">
-          </div>
-        </div>
-
-        <div class="form-card" id="formJornada" style="display: none;">
-          <h3><i class="fas fa-plus-circle"></i> <span id="jornadaFormTitle">Cadastrar Jornada</span></h3>
-          <form id="jornadaForm">
-            <input type="hidden" id="jornadaId">
-            <div class="form-group">
-              <label><i class="fas fa-calendar-day"></i> Dias da semana</label>
-              <div class="dias-checkbox">
-                <label><input type="checkbox" value="seg"> Seg</label>
-                <label><input type="checkbox" value="ter"> Ter</label>
-                <label><input type="checkbox" value="qua"> Qua</label>
-                <label><input type="checkbox" value="qui"> Qui</label>
-                <label><input type="checkbox" value="sex"> Sex</label>
-                <label><input type="checkbox" value="sab"> Sáb</label>
-                <label><input type="checkbox" value="dom"> Dom</label>
-              </div>
-            </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label><i class="fas fa-clock"></i> Início</label>
-                <input type="time" id="jornadaInicio" required>
-              </div>
-              <div class="form-group">
-                <label><i class="fas fa-clock"></i> Fim</label>
-                <input type="time" id="jornadaFim" required>
-              </div>
-            </div>
-            <div class="form-actions">
-              <button type="submit" class="btn-salvar"><i class="fas fa-save"></i> Salvar</button>
-              <button type="button" class="btn-cancelar" id="cancelarJornada"><i class="fas fa-times"></i> Cancelar</button>
-            </div>
-          </form>
-        </div>
-
-        <div class="list-card">
-          <h3><i class="fas fa-list"></i> Jornadas Cadastradas</h3>
-          <div class="table-responsive">
-            <table id="tabelaJornadas">
-              <thead>
-                <tr>
-                  <th>Descrição</th>
-                  <th>Ações</th>
-                </tr>
-              </thead>
-              <tbody id="jornadasList">
-                <tr><td colspan="2" class="loading">Carregando...</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </section>
-
       <!-- Aba Registro de Presença -->
       <section id="tab-presenca" class="tab-content">
         <div class="content-header">
@@ -266,15 +202,7 @@
             <select id="filtroPostoPresenca">
               <option value="">Todos os postos</option>
             </select>
-            <select id="filtroFuncaoPresenca">
-              <option value="">Todas as funções</option>
-              <option value="Limpeza">Limpeza</option>
-              <option value="Portaria">Portaria</option>
-              <option value="Promotor">Promotor</option>
-              <option value="Segurança">Segurança</option>
-              <option value="Recepção">Recepção</option>
-              <option value="Supervisão">Supervisão</option>
-            </select>
+            <input type="text" id="filtroFuncaoPresenca" placeholder="Filtrar por função">
             <select id="filtroStatusPresenca">
               <option value="">Todos os status</option>
               <option value="Aguardando">Aguardando</option>

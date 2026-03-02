@@ -15,7 +15,6 @@ import {
   onSnapshot
 } from "https://cdn.skypack.dev/firebase@9.22.0/firestore";
 
-// Configuração do Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyB5Fwfiz-b0RtQoEI-cXUgBuyxaMe8qGqg",
   authDomain: "colaboradores-2482c.firebaseapp.com",
@@ -30,7 +29,6 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// Verifica autenticação
 onAuthStateChanged(auth, (user) => {
   if (!user) {
     window.location.href = "loginsupervisor.html";
@@ -39,7 +37,6 @@ onAuthStateChanged(auth, (user) => {
   }
 });
 
-// Logout
 document.getElementById('logoutBtn').addEventListener('click', () => {
   signOut(auth).then(() => {
     window.location.href = "loginsupervisor.html";
@@ -60,7 +57,6 @@ navItems.forEach(item => {
     if (tabId === 'presenca') {
       atualizarDataHoje();
     }
-    // Se estiver no mobile, fechar o filtro ao mudar de aba
     fecharFiltroMobile();
   });
 });
@@ -87,14 +83,59 @@ if (cpfInput) {
   cpfInput.addEventListener('input', () => mascaraCPF(cpfInput));
 }
 
+// Formata função: primeira letra maiúscula, restante minúscula
+function formatarFuncao(input) {
+  let val = input.value.trim();
+  if (val.length > 0) {
+    val = val.charAt(0).toUpperCase() + val.slice(1).toLowerCase();
+    input.value = val;
+  }
+}
+
+// Máscara de hora: 0800 -> 08:00
+function mascaraHora(input) {
+  let v = input.value.replace(/\D/g, ''); // remove não dígitos
+  if (v.length > 4) v = v.slice(0, 4);
+  
+  if (v.length >= 3) {
+    // Formata como HH:MM
+    let horas = v.slice(0, 2);
+    let minutos = v.slice(2, 4);
+    // Valida horas e minutos
+    if (parseInt(horas) > 23) horas = '23';
+    if (parseInt(minutos) > 59) minutos = '59';
+    input.value = horas + ':' + minutos;
+  } else {
+    input.value = v;
+  }
+}
+
+// Configurar máscaras nos campos de hora
+const funcInicio = document.getElementById('funcInicio');
+const funcFim = document.getElementById('funcFim');
+if (funcInicio) {
+  funcInicio.addEventListener('input', () => mascaraHora(funcInicio));
+  funcInicio.addEventListener('blur', () => mascaraHora(funcInicio));
+}
+if (funcFim) {
+  funcFim.addEventListener('input', () => mascaraHora(funcFim));
+  funcFim.addEventListener('blur', () => mascaraHora(funcFim));
+}
+
+// Configurar formatação da função
+const funcFuncao = document.getElementById('funcFuncao');
+if (funcFuncao) {
+  funcFuncao.addEventListener('blur', () => formatarFuncao(funcFuncao));
+}
+
 // Inicialização
 function iniciar() {
   carregarPostos();
-  carregarJornadas();
   carregarFuncionarios();
   carregarPresenca();
   setupFiltros();
-  setupMobileFilters(); // Ativa o botão de filtro no mobile
+  setupMobileFilters();
+  setupDiasBotoes(); // configura botões de dias
 }
 
 // ---------- POSTOS ----------
@@ -166,84 +207,6 @@ function carregarPostos() {
   });
 }
 
-// ---------- JORNADAS ----------
-let jornadasData = [];
-const novaJornadaBtn = document.getElementById('novaJornadaBtn');
-const formJornada = document.getElementById('formJornada');
-const cancelarJornada = document.getElementById('cancelarJornada');
-const jornadaForm = document.getElementById('jornadaForm');
-const jornadaIdField = document.getElementById('jornadaId');
-const jornadaFormTitle = document.getElementById('jornadaFormTitle');
-
-novaJornadaBtn.addEventListener('click', () => {
-  jornadaForm.reset();
-  jornadaIdField.value = '';
-  jornadaFormTitle.innerText = 'Cadastrar Jornada';
-  formJornada.style.display = 'block';
-});
-
-cancelarJornada.addEventListener('click', () => {
-  formJornada.style.display = 'none';
-  jornadaForm.reset();
-});
-
-jornadaForm.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const checkboxes = document.querySelectorAll('#jornadaForm .dias-checkbox input:checked');
-  const dias = Array.from(checkboxes).map(cb => cb.value);
-  if (dias.length === 0) {
-    alert('Selecione pelo menos um dia.');
-    return;
-  }
-  const inicio = document.getElementById('jornadaInicio').value;
-  const fim = document.getElementById('jornadaFim').value;
-  const id = jornadaIdField.value;
-
-  const mapaDias = {
-    seg: 'Seg', ter: 'Ter', qua: 'Qua', qui: 'Qui', sex: 'Sex', sab: 'Sáb', dom: 'Dom'
-  };
-  const diasFormatados = dias.map(d => mapaDias[d]).join(', ');
-  const descricao = `${diasFormatados} · ${inicio}h às ${fim}h`;
-
-  try {
-    if (id) {
-      const jornadaRef = doc(db, "jornadas", id);
-      await updateDoc(jornadaRef, { dias, horaInicio: inicio, horaFim: fim, descricao });
-    } else {
-      await addDoc(collection(db, "jornadas"), { dias, horaInicio: inicio, horaFim: fim, descricao });
-    }
-    jornadaForm.reset();
-    formJornada.style.display = 'none';
-  } catch (error) {
-    alert('Erro ao salvar jornada: ' + error.message);
-  }
-});
-
-function carregarJornadas() {
-  const jornadasList = document.getElementById('jornadasList');
-  const q = query(collection(db, "jornadas"), orderBy("descricao"));
-
-  onSnapshot(q, (snapshot) => {
-    jornadasData = [];
-    let html = '';
-    snapshot.forEach(doc => {
-      const j = { id: doc.id, ...doc.data() };
-      jornadasData.push(j);
-      html += `<tr>
-        <td>${j.descricao}</td>
-        <td>
-          <button class="btn-acao btn-editar" data-id="${j.id}" data-tipo="jornada"><i class="fas fa-edit"></i></button>
-          <button class="btn-acao btn-excluir" data-id="${j.id}" data-tipo="jornada"><i class="fas fa-trash"></i></button>
-        </td>
-      </tr>`;
-    });
-    if (html === '') html = '<tr><td colspan="2" class="loading">Nenhuma jornada cadastrada.</td></tr>';
-    jornadasList.innerHTML = html;
-    atualizarSelectJornadas();
-    adicionarEventosAcao();
-  });
-}
-
 // ---------- FUNCIONÁRIOS ----------
 let funcionariosData = [];
 const novoFuncionarioBtn = document.getElementById('novoFuncionarioBtn');
@@ -252,11 +215,45 @@ const cancelarFuncionario = document.getElementById('cancelarFuncionario');
 const funcionarioForm = document.getElementById('funcionarioForm');
 const funcIdField = document.getElementById('funcId');
 const funcFormTitle = document.getElementById('funcFormTitle');
+const funcDiasHidden = document.getElementById('funcDias');
+
+// Configura botões de dias da semana
+function setupDiasBotoes() {
+  const botoes = document.querySelectorAll('.dia-btn');
+  botoes.forEach(btn => {
+    btn.addEventListener('click', () => {
+      btn.classList.toggle('selected');
+      atualizarDiasHidden();
+    });
+  });
+}
+
+function atualizarDiasHidden() {
+  const selecionados = [];
+  document.querySelectorAll('.dia-btn.selected').forEach(btn => {
+    selecionados.push(btn.dataset.dia);
+  });
+  funcDiasHidden.value = selecionados.join(',');
+}
+
+function setDiasSelecionados(diasString) {
+  // diasString ex: "seg,ter,qua"
+  const diasArray = diasString ? diasString.split(',') : [];
+  document.querySelectorAll('.dia-btn').forEach(btn => {
+    const dia = btn.dataset.dia;
+    if (diasArray.includes(dia)) {
+      btn.classList.add('selected');
+    } else {
+      btn.classList.remove('selected');
+    }
+  });
+  atualizarDiasHidden();
+}
 
 novoFuncionarioBtn.addEventListener('click', () => {
   preencherSelectPostos();
-  preencherSelectJornadas();
   funcionarioForm.reset();
+  setDiasSelecionados(''); // limpa seleção
   funcIdField.value = '';
   funcFormTitle.innerText = 'Cadastrar Funcionário';
   formFuncionario.style.display = 'block';
@@ -284,23 +281,6 @@ async function preencherSelectPostos(selectedId = '') {
   }
 }
 
-async function preencherSelectJornadas(selectedId = '') {
-  const select = document.getElementById('funcJornada');
-  select.innerHTML = '<option value="">Carregando...</option>';
-  try {
-    const querySnapshot = await getDocs(collection(db, "jornadas"));
-    let options = '<option value="">Selecione uma jornada</option>';
-    querySnapshot.forEach(doc => {
-      const j = doc.data();
-      const selected = (doc.id === selectedId) ? 'selected' : '';
-      options += `<option value="${doc.id}" ${selected} data-desc="${j.descricao}">${j.descricao}</option>`;
-    });
-    select.innerHTML = options;
-  } catch (error) {
-    select.innerHTML = '<option value="">Erro ao carregar</option>';
-  }
-}
-
 funcionarioForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   const id = funcIdField.value;
@@ -309,24 +289,60 @@ funcionarioForm.addEventListener('submit', async (e) => {
   const postoSelect = document.getElementById('funcPosto');
   const postoId = postoSelect.value;
   const postoNome = postoSelect.options[postoSelect.selectedIndex]?.dataset.nome || '';
-  const funcao = document.getElementById('funcFuncao').value;
-  const jornadaSelect = document.getElementById('funcJornada');
-  const jornadaId = jornadaSelect.value;
-  const jornadaDesc = jornadaSelect.options[jornadaSelect.selectedIndex]?.dataset.desc || '';
+  const funcao = document.getElementById('funcFuncao').value.trim();
+  formatarFuncao({ value: funcao }); // garante formatação
 
-  if (!nome || !cpf || !postoId || !funcao || !jornadaId) {
-    alert('Preencha todos os campos.');
+  // Dias da semana
+  const diasSelecionados = funcDiasHidden.value;
+  if (!diasSelecionados) {
+    alert('Selecione pelo menos um dia da semana.');
     return;
   }
+
+  // Horários
+  const inicio = document.getElementById('funcInicio').value.trim();
+  const fim = document.getElementById('funcFim').value.trim();
+  if (!inicio || !fim) {
+    alert('Preencha horário de início e fim.');
+    return;
+  }
+
+  // Valida formato HH:MM
+  const horaRegex = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/;
+  if (!horaRegex.test(inicio) || !horaRegex.test(fim)) {
+    alert('Horário inválido. Use formato HH:MM (ex: 08:00, 17:30).');
+    return;
+  }
+
+  // Cria descrição da jornada
+  const mapaDias = {
+    seg: 'Seg', ter: 'Ter', qua: 'Qua', qui: 'Qui', sex: 'Sex', sab: 'Sáb', dom: 'Dom'
+  };
+  const diasArray = diasSelecionados.split(',');
+  const diasFormatados = diasArray.map(d => mapaDias[d]).join(', ');
+  const jornadaDesc = `${diasFormatados} · ${inicio} às ${fim}`;
+
+  const dadosFuncionario = {
+    nome,
+    cpf,
+    postoId,
+    postoNome,
+    funcao,
+    diasTrabalho: diasArray, // array de dias
+    horaInicio: inicio,
+    horaFim: fim,
+    jornadaDesc // para exibição rápida
+  };
 
   try {
     if (id) {
       const funcRef = doc(db, "funcionarios", id);
-      await updateDoc(funcRef, { nome, cpf, postoId, postoNome, funcao, jornadaId, jornadaDesc });
+      await updateDoc(funcRef, dadosFuncionario);
     } else {
-      await addDoc(collection(db, "funcionarios"), { nome, cpf, postoId, postoNome, funcao, jornadaId, jornadaDesc });
+      await addDoc(collection(db, "funcionarios"), dadosFuncionario);
     }
     funcionarioForm.reset();
+    setDiasSelecionados('');
     formFuncionario.style.display = 'none';
   } catch (error) {
     alert('Erro ao salvar funcionário: ' + error.message);
@@ -349,14 +365,15 @@ function carregarFuncionarios() {
 function aplicarFiltrosFuncionarios() {
   const searchTerm = document.getElementById('searchFuncionarios').value.toLowerCase();
   const postoFiltro = document.getElementById('filtroPostoFunc').value;
-  const funcaoFiltro = document.getElementById('filtroFuncaoFunc').value;
+  const funcaoFiltro = document.getElementById('filtroFuncaoFunc').value.toLowerCase();
 
   const dadosFiltrados = funcionariosData.filter(f => {
     if (!f) return false;
     const nome = (f.nome || '').toLowerCase();
     const matchNome = nome.includes(searchTerm);
     const matchPosto = !postoFiltro || (f.postoId || '') === postoFiltro;
-    const matchFuncao = !funcaoFiltro || (f.funcao || '') === funcaoFiltro;
+    const funcao = (f.funcao || '').toLowerCase();
+    const matchFuncao = !funcaoFiltro || funcao.includes(funcaoFiltro);
     return matchNome && matchPosto && matchFuncao;
   });
 
@@ -381,23 +398,14 @@ function aplicarFiltrosFuncionarios() {
 
 // ---------- PRESENÇA ----------
 let funcionariosPresenca = [];
-let jornadasMapPresenca = new Map();
-let presencasHojeMap = new Map(); // Mapa de funcionarioId -> dados da presença (para status Confirmado)
+let presencasHojeMap = new Map();
 
 function carregarPresenca() {
-  // Monitora mudanças em funcionários
   const qFuncionarios = query(collection(db, "funcionarios"), orderBy("nome"));
   onSnapshot(qFuncionarios, async () => {
     await atualizarPresenca();
   });
 
-  // Monitora mudanças em jornadas
-  const qJornadas = query(collection(db, "jornadas"));
-  onSnapshot(qJornadas, async () => {
-    await atualizarPresenca();
-  });
-
-  // Monitora mudanças em presenças (para atualizar status em tempo real)
   const qPresencas = query(collection(db, "presencas"));
   onSnapshot(qPresencas, async () => {
     await atualizarPresenca();
@@ -410,19 +418,12 @@ async function atualizarPresenca() {
   const diaHoje = mapaDiaSemana[hoje];
   const dataStrHoje = new Date().toISOString().split('T')[0];
 
-  // Buscar todos os funcionários
   const funcSnapshot = await getDocs(collection(db, "funcionarios"));
   funcionariosPresenca = [];
   funcSnapshot.forEach(doc => {
     funcionariosPresenca.push({ id: doc.id, ...doc.data() });
   });
 
-  // Buscar todas as jornadas
-  const jornadasSnapshot = await getDocs(collection(db, "jornadas"));
-  jornadasMapPresenca.clear();
-  jornadasSnapshot.forEach(doc => jornadasMapPresenca.set(doc.id, doc.data()));
-
-  // Buscar presenças de hoje
   const presencasQuery = query(
     collection(db, "presencas"),
     where("dataStr", "==", dataStrHoje)
@@ -440,7 +441,7 @@ async function atualizarPresenca() {
 function aplicarFiltrosPresenca() {
   const searchTerm = document.getElementById('searchPresenca').value.toLowerCase();
   const postoFiltro = document.getElementById('filtroPostoPresenca').value;
-  const funcaoFiltro = document.getElementById('filtroFuncaoPresenca').value;
+  const funcaoFiltro = document.getElementById('filtroFuncaoPresenca').value.toLowerCase();
   const statusFiltro = document.getElementById('filtroStatusPresenca').value;
 
   const hoje = new Date().getDay();
@@ -456,19 +457,17 @@ function aplicarFiltrosPresenca() {
     const postoId = f.postoId || '';
     const matchPosto = !postoFiltro || postoId === postoFiltro;
 
-    const funcao = f.funcao || '';
-    const matchFuncao = !funcaoFiltro || funcao === funcaoFiltro;
+    const funcao = (f.funcao || '').toLowerCase();
+    const matchFuncao = !funcaoFiltro || funcao.includes(funcaoFiltro);
 
     // Determinar status
     let status = 'Folga';
     let statusClass = 'folga';
 
-    const jornada = jornadasMapPresenca.get(f.jornadaId);
-    const diasTrabalho = jornada?.dias || [];
+    const diasTrabalho = f.diasTrabalho || [];
     const isDiaTrabalho = diasTrabalho.includes(diaHoje);
 
     if (isDiaTrabalho) {
-      // Verifica se já tem presença registrada hoje
       if (presencasHojeMap.has(f.id)) {
         status = 'Confirmado';
         statusClass = 'confirmado';
@@ -476,12 +475,8 @@ function aplicarFiltrosPresenca() {
         status = 'Aguardando';
         statusClass = 'aguardando';
       }
-    } else {
-      status = 'Folga';
-      statusClass = 'folga';
     }
 
-    // Guardar no objeto para usar no matchStatus e na exibição
     f._status = status;
     f._statusClass = statusClass;
 
@@ -520,21 +515,16 @@ function atualizarSelectPostos() {
   });
 }
 
-function atualizarSelectJornadas() {
-  // Não é necessário para filtros, apenas para o formulário
-}
-
 function setupFiltros() {
   document.getElementById('searchFuncionarios').addEventListener('input', aplicarFiltrosFuncionarios);
   document.getElementById('filtroPostoFunc').addEventListener('change', aplicarFiltrosFuncionarios);
-  document.getElementById('filtroFuncaoFunc').addEventListener('change', aplicarFiltrosFuncionarios);
+  document.getElementById('filtroFuncaoFunc').addEventListener('input', aplicarFiltrosFuncionarios);
 
   document.getElementById('searchPostos').addEventListener('input', filtrarPostos);
-  document.getElementById('searchJornadas').addEventListener('input', filtrarJornadas);
 
   document.getElementById('searchPresenca').addEventListener('input', aplicarFiltrosPresenca);
   document.getElementById('filtroPostoPresenca').addEventListener('change', aplicarFiltrosPresenca);
-  document.getElementById('filtroFuncaoPresenca').addEventListener('change', aplicarFiltrosPresenca);
+  document.getElementById('filtroFuncaoPresenca').addEventListener('input', aplicarFiltrosPresenca);
   document.getElementById('filtroStatusPresenca').addEventListener('change', aplicarFiltrosPresenca);
 }
 
@@ -557,26 +547,6 @@ function filtrarPostos() {
   });
   if (html === '') html = '<tr><td colspan="3" class="loading">Nenhum posto encontrado.</td></tr>';
   document.getElementById('postosList').innerHTML = html;
-  adicionarEventosAcao();
-}
-
-function filtrarJornadas() {
-  const term = document.getElementById('searchJornadas').value.toLowerCase();
-  const filtered = jornadasData.filter(j => 
-    (j.descricao || '').toLowerCase().includes(term)
-  );
-  let html = '';
-  filtered.forEach(j => {
-    html += `<tr>
-      <td>${j.descricao || ''}</td>
-      <td>
-        <button class="btn-acao btn-editar" data-id="${j.id}" data-tipo="jornada"><i class="fas fa-edit"></i></button>
-        <button class="btn-acao btn-excluir" data-id="${j.id}" data-tipo="jornada"><i class="fas fa-trash"></i></button>
-      </td>
-    </tr>`;
-  });
-  if (html === '') html = '<tr><td colspan="2" class="loading">Nenhuma jornada encontrada.</td></tr>';
-  document.getElementById('jornadasList').innerHTML = html;
   adicionarEventosAcao();
 }
 
@@ -605,20 +575,6 @@ async function editarHandler(e) {
       document.getElementById('postoFormTitle').innerText = 'Editar Posto';
       document.getElementById('formPosto').style.display = 'block';
     }
-  } else if (tipo === 'jornada') {
-    const docRef = doc(db, "jornadas", id);
-    const docSnap = await getDoc(docRef);
-    if (docSnap.exists()) {
-      const data = docSnap.data();
-      document.getElementById('jornadaId').value = id;
-      document.getElementById('jornadaInicio').value = data.horaInicio || '';
-      document.getElementById('jornadaFim').value = data.horaFim || '';
-      document.querySelectorAll('#jornadaForm .dias-checkbox input').forEach(cb => {
-        cb.checked = data.dias ? data.dias.includes(cb.value) : false;
-      });
-      document.getElementById('jornadaFormTitle').innerText = 'Editar Jornada';
-      document.getElementById('formJornada').style.display = 'block';
-    }
   } else if (tipo === 'funcionario') {
     const docRef = doc(db, "funcionarios", id);
     const docSnap = await getDoc(docRef);
@@ -629,7 +585,10 @@ async function editarHandler(e) {
       document.getElementById('funcCpf').value = data.cpf || '';
       document.getElementById('funcFuncao').value = data.funcao || '';
       await preencherSelectPostos(data.postoId);
-      await preencherSelectJornadas(data.jornadaId);
+      // Preenche dias e horários
+      setDiasSelecionados(data.diasTrabalho ? data.diasTrabalho.join(',') : '');
+      document.getElementById('funcInicio').value = data.horaInicio || '';
+      document.getElementById('funcFim').value = data.horaFim || '';
       document.getElementById('funcFormTitle').innerText = 'Editar Funcionário';
       document.getElementById('formFuncionario').style.display = 'block';
     }
@@ -645,8 +604,6 @@ async function excluirHandler(e) {
   try {
     if (tipo === 'posto') {
       await deleteDoc(doc(db, "postos", id));
-    } else if (tipo === 'jornada') {
-      await deleteDoc(doc(db, "jornadas", id));
     } else if (tipo === 'funcionario') {
       await deleteDoc(doc(db, "funcionarios", id));
     }
@@ -657,22 +614,18 @@ async function excluirHandler(e) {
 
 // ---------- FUNÇÕES PARA MOBILE (FILTRO OCULTO) ----------
 function setupMobileFilters() {
-  // Adiciona botão de filtro em cada barra de filtros (apenas para mobile via CSS)
   const filtrosBars = document.querySelectorAll('.filtros-bar');
   
   filtrosBars.forEach(bar => {
-    // Verifica se já existe botão para não duplicar
     if (bar.querySelector('.btn-filtro-mobile')) return;
 
     const filtrosDiv = bar.querySelector('.filtros');
     if (!filtrosDiv) return;
 
-    // Cria botão de filtro
     const btnFiltro = document.createElement('div');
     btnFiltro.className = 'btn-filtro-mobile';
     btnFiltro.innerHTML = '<i class="fas fa-filter"></i>';
     
-    // Insere antes ou depois da search-box? Vamos colocar após a search-box
     const searchBox = bar.querySelector('.search-box');
     if (searchBox) {
       searchBox.insertAdjacentElement('afterend', btnFiltro);
@@ -680,14 +633,12 @@ function setupMobileFilters() {
       bar.appendChild(btnFiltro);
     }
 
-    // Evento de clique para mostrar/esconder os filtros
     btnFiltro.addEventListener('click', (e) => {
       e.stopPropagation();
       filtrosDiv.classList.toggle('show');
       btnFiltro.classList.toggle('active');
     });
 
-    // Opcional: clicar fora para fechar (em dispositivos móveis)
     document.addEventListener('click', (e) => {
       if (!bar.contains(e.target)) {
         filtrosDiv.classList.remove('show');

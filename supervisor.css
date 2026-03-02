@@ -220,7 +220,8 @@ body {
   flex: 3;
 }
 
-.filtros select {
+.filtros select,
+.filtros input[type="text"] {
   flex: 1;
   min-width: 140px;
   padding: 0.6rem 1rem;
@@ -233,7 +234,8 @@ body {
   transition: all 0.2s;
 }
 
-.filtros select:hover {
+.filtros select:hover,
+.filtros input[type="text"]:hover {
   border-color: #C10404;
 }
 
@@ -303,22 +305,40 @@ body {
   flex: 1;
 }
 
-.dias-checkbox {
+/* Botões de dias da semana */
+.dias-botoes {
   display: flex;
   flex-wrap: wrap;
-  gap: 1rem;
-  background: #f5f5f5;
-  padding: 0.8rem 1rem;
-  border-radius: 0.8rem;
-  font-size: 0.9rem;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
 }
 
-.dias-checkbox label {
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
-  font-weight: normal;
+.dia-btn {
+  background: #f0f0f0;
+  border: 1px solid #ddd;
+  border-radius: 2rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 500;
   cursor: pointer;
+  transition: all 0.2s;
+  color: #333;
+  min-width: 50px;
+  text-align: center;
+}
+
+.dia-btn.selected {
+  background: #C10404;
+  border-color: #C10404;
+  color: white;
+}
+
+.dia-btn:hover {
+  background: #e0e0e0;
+}
+
+.dia-btn.selected:hover {
+  background: #a00303;
 }
 
 .form-actions {
@@ -456,7 +476,6 @@ tr:last-child td {
 /* ESTILOS PARA MOBILE (até 768px)              */
 /* ============================================ */
 @media (max-width: 768px) {
-  /* Sidebar vira top navigation */
   .dashboard {
     flex-direction: column;
   }
@@ -468,11 +487,11 @@ tr:last-child td {
     border-right: none;
     border-bottom: 1px solid #eaeaea;
     box-shadow: 0 4px 10px rgba(0,0,0,0.02);
-    order: 0; /* No topo */
+    order: 0;
   }
 
   .sidebar-header {
-    display: none; /* Oculta o título */
+    display: none;
   }
 
   .sidebar-nav {
@@ -503,16 +522,14 @@ tr:last-child td {
   }
 
   .logout-btn {
-    display: none; /* Esconde botão de logout na top nav (opcional) */
+    display: none;
   }
 
-  /* Conteúdo principal ocupa o resto */
   .content {
     padding: 1rem;
-    height: calc(100vh - 60px); /* Altura total menos altura da top nav */
+    height: calc(100vh - 60px);
   }
 
-  /* Cabeçalhos */
   .content-header h2 {
     font-size: 1.4rem;
   }
@@ -527,7 +544,6 @@ tr:last-child td {
     font-size: 0.9rem;
   }
 
-  /* Barra de filtros: search e botão filtro lado a lado */
   .filtros-bar {
     display: flex;
     flex-direction: row;
@@ -541,7 +557,6 @@ tr:last-child td {
     min-width: 0;
   }
 
-  /* Botão de filtro */
   .btn-filtro-mobile {
     background: #f0f0f0;
     border: 1px solid #e0e0e0;
@@ -564,7 +579,6 @@ tr:last-child td {
     border-color: #C10404;
   }
 
-  /* Filtros (selects) ocultos por padrão */
   .filtros {
     display: none;
     width: 100%;
@@ -577,19 +591,18 @@ tr:last-child td {
     display: flex;
   }
 
-  .filtros select {
+  .filtros select,
+  .filtros input[type="text"] {
     width: 100%;
     padding: 0.8rem 1rem;
     font-size: 1rem;
   }
 
-  /* Cards e formulários */
   .form-card, .list-card {
     padding: 1rem;
     border-radius: 1.2rem;
   }
 
-  /* Formulários em tela cheia */
   .form-card {
     position: fixed;
     top: 0;
@@ -618,9 +631,14 @@ tr:last-child td {
     font-size: 1rem;
   }
 
-  .dias-checkbox {
-    gap: 0.8rem;
-    padding: 0.8rem;
+  .dias-botoes {
+    gap: 0.4rem;
+  }
+
+  .dia-btn {
+    padding: 0.5rem 0.8rem;
+    font-size: 0.8rem;
+    min-width: 45px;
   }
 
   .form-row {
@@ -647,7 +665,6 @@ tr:last-child td {
   }
 }
 
-/* Telas muito pequenas */
 @media (max-width: 400px) {
   .nav-item span {
     font-size: 0.6rem;
