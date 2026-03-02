@@ -279,7 +279,8 @@ body {
   font-size: 0.95rem;
 }
 
-.form-group input, .form-group select {
+.form-group input,
+.form-group select {
   width: 100%;
   padding: 0.65rem 1rem;
   border: 1px solid #e0e0e0;
@@ -289,7 +290,8 @@ body {
   transition: all 0.2s;
 }
 
-.form-group input:focus, .form-group select:focus {
+.form-group input:focus,
+.form-group select:focus {
   outline: none;
   border-color: #C10404;
   box-shadow: 0 0 0 3px rgba(193,4,4,0.1);
@@ -305,15 +307,15 @@ body {
   flex: 1;
 }
 
-/* Botões de dias da semana */
+/* Estilo para os botões de dia (jornada) */
 .dias-botoes {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.8rem;
 }
 
-.dia-btn {
+.btn-dia {
   background: #f0f0f0;
   border: 1px solid #ddd;
   border-radius: 2rem;
@@ -323,22 +325,72 @@ body {
   cursor: pointer;
   transition: all 0.2s;
   color: #333;
-  min-width: 50px;
-  text-align: center;
 }
 
-.dia-btn.selected {
+.btn-dia.selected {
   background: #C10404;
   border-color: #C10404;
   color: white;
 }
 
-.dia-btn:hover {
-  background: #e0e0e0;
+/* Horário com máscara */
+.horario-input {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
-.dia-btn.selected:hover {
-  background: #a00303;
+.horario-input input {
+  flex: 1;
+  text-align: center;
+}
+
+/* Bloco de jornada */
+.jornada-bloco {
+  background: #f9f9f9;
+  border-radius: 1rem;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid #eee;
+  position: relative;
+}
+
+.btn-remover-jornada {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: none;
+  border: none;
+  color: #c0392b;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0.2rem 0.5rem;
+  border-radius: 0.5rem;
+}
+
+.btn-remover-jornada:hover {
+  background: #f9ebea;
+}
+
+.btn-add-jornada {
+  background: none;
+  border: 1px dashed #C10404;
+  border-radius: 2rem;
+  padding: 0.6rem 1.2rem;
+  color: #C10404;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  transition: all 0.2s;
+}
+
+.btn-add-jornada:hover {
+  background: #fff0f0;
+  border-style: solid;
 }
 
 .form-actions {
@@ -545,57 +597,21 @@ tr:last-child td {
   }
 
   .filtros-bar {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 0.5rem;
+    flex-direction: column;
+    align-items: stretch;
     padding: 0.8rem;
   }
 
-  .search-box {
-    flex: 1;
-    min-width: 0;
-  }
-
-  .btn-filtro-mobile {
-    background: #f0f0f0;
-    border: 1px solid #e0e0e0;
-    border-radius: 2rem;
-    width: 48px;
-    height: 48px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.4rem;
-    color: #C10404;
-    cursor: pointer;
-    transition: all 0.2s;
-    flex-shrink: 0;
-  }
-
-  .btn-filtro-mobile.active {
-    background: #C10404;
-    color: white;
-    border-color: #C10404;
-  }
-
   .filtros {
-    display: none;
-    width: 100%;
     flex-direction: column;
     gap: 0.5rem;
-    margin-top: 0.5rem;
-  }
-
-  .filtros.show {
-    display: flex;
   }
 
   .filtros select,
   .filtros input[type="text"] {
     width: 100%;
+    min-width: auto;
     padding: 0.8rem 1rem;
-    font-size: 1rem;
   }
 
   .form-card, .list-card {
@@ -603,6 +619,7 @@ tr:last-child td {
     border-radius: 1.2rem;
   }
 
+  /* Formulários em tela cheia */
   .form-card {
     position: fixed;
     top: 0;
@@ -626,24 +643,33 @@ tr:last-child td {
     background: white;
   }
 
-  .form-group input, .form-group select {
+  .form-group input,
+  .form-group select {
     padding: 0.8rem 1rem;
     font-size: 1rem;
-  }
-
-  .dias-botoes {
-    gap: 0.4rem;
-  }
-
-  .dia-btn {
-    padding: 0.5rem 0.8rem;
-    font-size: 0.8rem;
-    min-width: 45px;
   }
 
   .form-row {
     flex-direction: column;
     gap: 0;
+  }
+
+  .dias-botoes {
+    justify-content: center;
+  }
+
+  .btn-dia {
+    padding: 0.6rem 1.2rem;
+    font-size: 1rem;
+  }
+
+  .jornada-bloco {
+    padding: 1rem 0.8rem;
+  }
+
+  .btn-add-jornada {
+    width: 100%;
+    justify-content: center;
   }
 
   table {
@@ -662,21 +688,5 @@ tr:last-child td {
   .status {
     padding: 0.2rem 0.6rem;
     font-size: 0.7rem;
-  }
-}
-
-@media (max-width: 400px) {
-  .nav-item span {
-    font-size: 0.6rem;
-  }
-  .nav-item i {
-    font-size: 1.2rem;
-  }
-  .content-header h2 {
-    font-size: 1.2rem;
-  }
-  .btn-novo {
-    padding: 0.5rem 1rem;
-    font-size: 0.8rem;
   }
 }

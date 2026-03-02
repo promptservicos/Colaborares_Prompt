@@ -15,6 +15,7 @@ import {
   onSnapshot
 } from "https://cdn.skypack.dev/firebase@9.22.0/firestore";
 
+// Configuração do Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyB5Fwfiz-b0RtQoEI-cXUgBuyxaMe8qGqg",
   authDomain: "colaboradores-2482c.firebaseapp.com",
@@ -29,6 +30,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+// Verifica autenticação
 onAuthStateChanged(auth, (user) => {
   if (!user) {
     window.location.href = "loginsupervisor.html";
@@ -37,6 +39,7 @@ onAuthStateChanged(auth, (user) => {
   }
 });
 
+// Logout
 document.getElementById('logoutBtn').addEventListener('click', () => {
   signOut(auth).then(() => {
     window.location.href = "loginsupervisor.html";
@@ -57,7 +60,6 @@ navItems.forEach(item => {
     if (tabId === 'presenca') {
       atualizarDataHoje();
     }
-    fecharFiltroMobile();
   });
 });
 
@@ -83,49 +85,27 @@ if (cpfInput) {
   cpfInput.addEventListener('input', () => mascaraCPF(cpfInput));
 }
 
-// Formata função: primeira letra maiúscula, restante minúscula
+// Formatação da função (primeira letra maiúscula)
 function formatarFuncao(input) {
-  let val = input.value.trim();
-  if (val.length > 0) {
-    val = val.charAt(0).toUpperCase() + val.slice(1).toLowerCase();
-    input.value = val;
+  let valor = input.value.trim();
+  if (valor.length > 0) {
+    valor = valor.charAt(0).toUpperCase() + valor.slice(1).toLowerCase();
+    input.value = valor;
   }
 }
+const funcaoInput = document.getElementById('funcFuncao');
+if (funcaoInput) {
+  funcaoInput.addEventListener('blur', () => formatarFuncao(funcaoInput));
+}
 
-// Máscara de hora: 0800 -> 08:00
-function mascaraHora(input) {
-  let v = input.value.replace(/\D/g, ''); // remove não dígitos
-  if (v.length > 4) v = v.slice(0, 4);
-  
+// Máscara de horário (formato 1700 -> 17:00)
+function mascaraHorario(input) {
+  let v = input.value.replace(/\D/g, '');
   if (v.length >= 3) {
-    // Formata como HH:MM
-    let horas = v.slice(0, 2);
-    let minutos = v.slice(2, 4);
-    // Valida horas e minutos
-    if (parseInt(horas) > 23) horas = '23';
-    if (parseInt(minutos) > 59) minutos = '59';
-    input.value = horas + ':' + minutos;
-  } else {
-    input.value = v;
+    v = v.substring(0, 4);
+    v = v.replace(/^(\d{2})(\d{2})$/, '$1:$2');
   }
-}
-
-// Configurar máscaras nos campos de hora
-const funcInicio = document.getElementById('funcInicio');
-const funcFim = document.getElementById('funcFim');
-if (funcInicio) {
-  funcInicio.addEventListener('input', () => mascaraHora(funcInicio));
-  funcInicio.addEventListener('blur', () => mascaraHora(funcInicio));
-}
-if (funcFim) {
-  funcFim.addEventListener('input', () => mascaraHora(funcFim));
-  funcFim.addEventListener('blur', () => mascaraHora(funcFim));
-}
-
-// Configurar formatação da função
-const funcFuncao = document.getElementById('funcFuncao');
-if (funcFuncao) {
-  funcFuncao.addEventListener('blur', () => formatarFuncao(funcFuncao));
+  input.value = v;
 }
 
 // Inicialização
@@ -134,8 +114,7 @@ function iniciar() {
   carregarFuncionarios();
   carregarPresenca();
   setupFiltros();
-  setupMobileFilters();
-  setupDiasBotoes(); // configura botões de dias
+  setupMobileFilters(); // Reaproveita função anterior (se existir)
 }
 
 // ---------- POSTOS ----------
@@ -215,47 +194,146 @@ const cancelarFuncionario = document.getElementById('cancelarFuncionario');
 const funcionarioForm = document.getElementById('funcionarioForm');
 const funcIdField = document.getElementById('funcId');
 const funcFormTitle = document.getElementById('funcFormTitle');
-const funcDiasHidden = document.getElementById('funcDias');
+const jornadasContainer = document.getElementById('jornadasContainer');
+const addJornadaBtn = document.getElementById('addJornadaBtn');
 
-// Configura botões de dias da semana
-function setupDiasBotoes() {
-  const botoes = document.querySelectorAll('.dia-btn');
-  botoes.forEach(btn => {
-    btn.addEventListener('click', () => {
-      btn.classList.toggle('selected');
-      atualizarDiasHidden();
-    });
-  });
-}
+// Função para criar um bloco de jornada (vazio ou preenchido)
+function criarBlocoJornada(dados = { dias: [], horaInicio: '', horaFim: '' }, index = Date.now()) {
+  const diasSemana = ['seg', 'ter', 'qua', 'qui', 'sex', 'sab', 'dom'];
+  const nomesDias = { seg: 'Seg', ter: 'Ter', qua: 'Qua', qui: 'Qui', sex: 'Sex', sab: 'Sáb', dom: 'Dom' };
 
-function atualizarDiasHidden() {
-  const selecionados = [];
-  document.querySelectorAll('.dia-btn.selected').forEach(btn => {
-    selecionados.push(btn.dataset.dia);
-  });
-  funcDiasHidden.value = selecionados.join(',');
-}
+  const bloco = document.createElement('div');
+  bloco.className = 'jornada-bloco';
+  bloco.dataset.index = index;
 
-function setDiasSelecionados(diasString) {
-  // diasString ex: "seg,ter,qua"
-  const diasArray = diasString ? diasString.split(',') : [];
-  document.querySelectorAll('.dia-btn').forEach(btn => {
-    const dia = btn.dataset.dia;
-    if (diasArray.includes(dia)) {
-      btn.classList.add('selected');
+  // Botão remover (se não for o único)
+  const btnRemover = document.createElement('button');
+  btnRemover.type = 'button';
+  btnRemover.className = 'btn-remover-jornada';
+  btnRemover.innerHTML = '<i class="fas fa-times"></i>';
+  btnRemover.addEventListener('click', () => {
+    if (document.querySelectorAll('.jornada-bloco').length > 1) {
+      bloco.remove();
     } else {
-      btn.classList.remove('selected');
+      alert('É necessário pelo menos uma jornada.');
     }
   });
-  atualizarDiasHidden();
+
+  // Container dos botões de dia
+  const diasDiv = document.createElement('div');
+  diasDiv.className = 'dias-botoes';
+
+  diasSemana.forEach(dia => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = `btn-dia ${dados.dias.includes(dia) ? 'selected' : ''}`;
+    btn.textContent = nomesDias[dia];
+    btn.dataset.dia = dia;
+    btn.addEventListener('click', () => {
+      btn.classList.toggle('selected');
+    });
+    diasDiv.appendChild(btn);
+  });
+
+  // Campos de horário
+  const horarioRow = document.createElement('div');
+  horarioRow.className = 'form-row';
+
+  const inicioGroup = document.createElement('div');
+  inicioGroup.className = 'form-group';
+  inicioGroup.innerHTML = `
+    <label>Início</label>
+    <input type="text" class="horario-inicio" placeholder="HH:MM" value="${dados.horaInicio}" maxlength="5">
+  `;
+
+  const fimGroup = document.createElement('div');
+  fimGroup.className = 'form-group';
+  fimGroup.innerHTML = `
+    <label>Fim</label>
+    <input type="text" class="horario-fim" placeholder="HH:MM" value="${dados.horaFim}" maxlength="5">
+  `;
+
+  horarioRow.appendChild(inicioGroup);
+  horarioRow.appendChild(fimGroup);
+
+  // Aplica máscara aos inputs de hora
+  const inicioInput = inicioGroup.querySelector('input');
+  const fimInput = fimGroup.querySelector('input');
+  inicioInput.addEventListener('input', () => mascaraHorario(inicioInput));
+  fimInput.addEventListener('input', () => mascaraHorario(fimInput));
+
+  bloco.appendChild(btnRemover);
+  bloco.appendChild(diasDiv);
+  bloco.appendChild(horarioRow);
+
+  return bloco;
+}
+
+// Adicionar nova jornada ao clicar no botão
+addJornadaBtn.addEventListener('click', () => {
+  const novoBloco = criarBlocoJornada();
+  jornadasContainer.appendChild(novoBloco);
+});
+
+// Função para coletar os dados das jornadas do formulário
+function coletarJornadas() {
+  const blocos = document.querySelectorAll('.jornada-bloco');
+  const jornadas = [];
+
+  blocos.forEach(bloco => {
+    const diasSelecionados = [];
+    bloco.querySelectorAll('.btn-dia.selected').forEach(btn => {
+      diasSelecionados.push(btn.dataset.dia);
+    });
+
+    const horaInicio = bloco.querySelector('.horario-inicio').value;
+    const horaFim = bloco.querySelector('.horario-fim').value;
+
+    // Só adiciona se tiver pelo menos um dia e horários preenchidos
+    if (diasSelecionados.length > 0 && horaInicio && horaFim) {
+      jornadas.push({
+        dias: diasSelecionados,
+        horaInicio,
+        horaFim
+      });
+    }
+  });
+
+  return jornadas;
+}
+
+// Preencher o formulário com os dados do funcionário (inclusive jornadas)
+async function preencherFormFuncionario(dados) {
+  document.getElementById('funcNome').value = dados.nome || '';
+  document.getElementById('funcCpf').value = dados.cpf || '';
+  document.getElementById('funcFuncao').value = dados.funcao || '';
+  await preencherSelectPostos(dados.postoId);
+  
+  // Limpar container de jornadas
+  jornadasContainer.innerHTML = '';
+  
+  // Adicionar blocos de jornada
+  if (dados.jornadas && dados.jornadas.length > 0) {
+    dados.jornadas.forEach(j => {
+      const bloco = criarBlocoJornada(j);
+      jornadasContainer.appendChild(bloco);
+    });
+  } else {
+    // Se não houver, adiciona um bloco vazio
+    jornadasContainer.appendChild(criarBlocoJornada());
+  }
 }
 
 novoFuncionarioBtn.addEventListener('click', () => {
   preencherSelectPostos();
   funcionarioForm.reset();
-  setDiasSelecionados(''); // limpa seleção
   funcIdField.value = '';
   funcFormTitle.innerText = 'Cadastrar Funcionário';
+  
+  // Limpar e adicionar um bloco de jornada padrão
+  jornadasContainer.innerHTML = '';
+  jornadasContainer.appendChild(criarBlocoJornada());
+  
   formFuncionario.style.display = 'block';
 });
 
@@ -290,59 +368,36 @@ funcionarioForm.addEventListener('submit', async (e) => {
   const postoId = postoSelect.value;
   const postoNome = postoSelect.options[postoSelect.selectedIndex]?.dataset.nome || '';
   const funcao = document.getElementById('funcFuncao').value.trim();
-  formatarFuncao({ value: funcao }); // garante formatação
+  const funcaoFormatada = funcao.charAt(0).toUpperCase() + funcao.slice(1).toLowerCase();
+  const jornadas = coletarJornadas();
 
-  // Dias da semana
-  const diasSelecionados = funcDiasHidden.value;
-  if (!diasSelecionados) {
-    alert('Selecione pelo menos um dia da semana.');
+  if (!nome || !cpf || !postoId || !funcaoFormatada || jornadas.length === 0) {
+    alert('Preencha todos os campos e adicione pelo menos uma jornada válida.');
     return;
   }
-
-  // Horários
-  const inicio = document.getElementById('funcInicio').value.trim();
-  const fim = document.getElementById('funcFim').value.trim();
-  if (!inicio || !fim) {
-    alert('Preencha horário de início e fim.');
-    return;
-  }
-
-  // Valida formato HH:MM
-  const horaRegex = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/;
-  if (!horaRegex.test(inicio) || !horaRegex.test(fim)) {
-    alert('Horário inválido. Use formato HH:MM (ex: 08:00, 17:30).');
-    return;
-  }
-
-  // Cria descrição da jornada
-  const mapaDias = {
-    seg: 'Seg', ter: 'Ter', qua: 'Qua', qui: 'Qui', sex: 'Sex', sab: 'Sáb', dom: 'Dom'
-  };
-  const diasArray = diasSelecionados.split(',');
-  const diasFormatados = diasArray.map(d => mapaDias[d]).join(', ');
-  const jornadaDesc = `${diasFormatados} · ${inicio} às ${fim}`;
-
-  const dadosFuncionario = {
-    nome,
-    cpf,
-    postoId,
-    postoNome,
-    funcao,
-    diasTrabalho: diasArray, // array de dias
-    horaInicio: inicio,
-    horaFim: fim,
-    jornadaDesc // para exibição rápida
-  };
 
   try {
     if (id) {
       const funcRef = doc(db, "funcionarios", id);
-      await updateDoc(funcRef, dadosFuncionario);
+      await updateDoc(funcRef, { 
+        nome, 
+        cpf, 
+        postoId, 
+        postoNome, 
+        funcao: funcaoFormatada, 
+        jornadas 
+      });
     } else {
-      await addDoc(collection(db, "funcionarios"), dadosFuncionario);
+      await addDoc(collection(db, "funcionarios"), { 
+        nome, 
+        cpf, 
+        postoId, 
+        postoNome, 
+        funcao: funcaoFormatada, 
+        jornadas 
+      });
     }
     funcionarioForm.reset();
-    setDiasSelecionados('');
     formFuncionario.style.display = 'none';
   } catch (error) {
     alert('Erro ao salvar funcionário: ' + error.message);
@@ -372,19 +427,30 @@ function aplicarFiltrosFuncionarios() {
     const nome = (f.nome || '').toLowerCase();
     const matchNome = nome.includes(searchTerm);
     const matchPosto = !postoFiltro || (f.postoId || '') === postoFiltro;
-    const funcao = (f.funcao || '').toLowerCase();
-    const matchFuncao = !funcaoFiltro || funcao.includes(funcaoFiltro);
+    const matchFuncao = !funcaoFiltro || (f.funcao || '').toLowerCase().includes(funcaoFiltro);
     return matchNome && matchPosto && matchFuncao;
   });
 
   let html = '';
   dadosFiltrados.forEach(f => {
+    // Formatar exibição das jornadas
+    let jornadasStr = '';
+    if (f.jornadas && f.jornadas.length > 0) {
+      jornadasStr = f.jornadas.map(j => {
+        const dias = j.dias.map(d => {
+          const mapa = { seg: 'Seg', ter: 'Ter', qua: 'Qua', qui: 'Qui', sex: 'Sex', sab: 'Sáb', dom: 'Dom' };
+          return mapa[d] || d;
+        }).join(', ');
+        return `${dias} ${j.horaInicio}-${j.horaFim}`;
+      }).join(' | ');
+    }
+
     html += `<tr>
       <td>${f.nome || ''}</td>
       <td>${f.cpf || ''}</td>
       <td>${f.postoNome || ''}</td>
       <td>${f.funcao || ''}</td>
-      <td>${f.jornadaDesc || ''}</td>
+      <td>${jornadasStr}</td>
       <td>
         <button class="btn-acao btn-editar" data-id="${f.id}" data-tipo="funcionario"><i class="fas fa-edit"></i></button>
         <button class="btn-acao btn-excluir" data-id="${f.id}" data-tipo="funcionario"><i class="fas fa-trash"></i></button>
@@ -460,25 +526,29 @@ function aplicarFiltrosPresenca() {
     const funcao = (f.funcao || '').toLowerCase();
     const matchFuncao = !funcaoFiltro || funcao.includes(funcaoFiltro);
 
-    // Determinar status
+    // Determinar status baseado nas jornadas
     let status = 'Folga';
     let statusClass = 'folga';
+    let jornadaDesc = 'Folga';
 
-    const diasTrabalho = f.diasTrabalho || [];
-    const isDiaTrabalho = diasTrabalho.includes(diaHoje);
-
-    if (isDiaTrabalho) {
-      if (presencasHojeMap.has(f.id)) {
-        status = 'Confirmado';
-        statusClass = 'confirmado';
-      } else {
-        status = 'Aguardando';
-        statusClass = 'aguardando';
+    if (f.jornadas && f.jornadas.length > 0) {
+      // Verifica se algum dos blocos de jornada inclui o dia de hoje
+      const jornadaHoje = f.jornadas.find(j => j.dias.includes(diaHoje));
+      if (jornadaHoje) {
+        if (presencasHojeMap.has(f.id)) {
+          status = 'Confirmado';
+          statusClass = 'confirmado';
+        } else {
+          status = 'Aguardando';
+          statusClass = 'aguardando';
+        }
+        jornadaDesc = `${jornadaHoje.horaInicio} - ${jornadaHoje.horaFim}`;
       }
     }
 
     f._status = status;
     f._statusClass = statusClass;
+    f._jornadaDesc = jornadaDesc;
 
     const matchStatus = !statusFiltro || status === statusFiltro;
 
@@ -491,7 +561,7 @@ function aplicarFiltrosPresenca() {
       <td>${f.nome || ''}</td>
       <td>${f.postoNome || ''}</td>
       <td>${f.funcao || ''}</td>
-      <td>${f.jornadaDesc || ''}</td>
+      <td>${f._jornadaDesc}</td>
       <td><span class="status ${f._statusClass}">${f._status}</span></td>
     </tr>`;
   });
@@ -579,18 +649,10 @@ async function editarHandler(e) {
     const docRef = doc(db, "funcionarios", id);
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
-      const data = docSnap.data();
-      document.getElementById('funcId').value = id;
-      document.getElementById('funcNome').value = data.nome || '';
-      document.getElementById('funcCpf').value = data.cpf || '';
-      document.getElementById('funcFuncao').value = data.funcao || '';
-      await preencherSelectPostos(data.postoId);
-      // Preenche dias e horários
-      setDiasSelecionados(data.diasTrabalho ? data.diasTrabalho.join(',') : '');
-      document.getElementById('funcInicio').value = data.horaInicio || '';
-      document.getElementById('funcFim').value = data.horaFim || '';
-      document.getElementById('funcFormTitle').innerText = 'Editar Funcionário';
-      document.getElementById('formFuncionario').style.display = 'block';
+      funcIdField.value = id;
+      funcFormTitle.innerText = 'Editar Funcionário';
+      await preencherFormFuncionario(docSnap.data());
+      formFuncionario.style.display = 'block';
     }
   }
 }
@@ -612,43 +674,7 @@ async function excluirHandler(e) {
   }
 }
 
-// ---------- FUNÇÕES PARA MOBILE (FILTRO OCULTO) ----------
+// Função para filtro mobile (pode ser mantida, mas não é essencial agora)
 function setupMobileFilters() {
-  const filtrosBars = document.querySelectorAll('.filtros-bar');
-  
-  filtrosBars.forEach(bar => {
-    if (bar.querySelector('.btn-filtro-mobile')) return;
-
-    const filtrosDiv = bar.querySelector('.filtros');
-    if (!filtrosDiv) return;
-
-    const btnFiltro = document.createElement('div');
-    btnFiltro.className = 'btn-filtro-mobile';
-    btnFiltro.innerHTML = '<i class="fas fa-filter"></i>';
-    
-    const searchBox = bar.querySelector('.search-box');
-    if (searchBox) {
-      searchBox.insertAdjacentElement('afterend', btnFiltro);
-    } else {
-      bar.appendChild(btnFiltro);
-    }
-
-    btnFiltro.addEventListener('click', (e) => {
-      e.stopPropagation();
-      filtrosDiv.classList.toggle('show');
-      btnFiltro.classList.toggle('active');
-    });
-
-    document.addEventListener('click', (e) => {
-      if (!bar.contains(e.target)) {
-        filtrosDiv.classList.remove('show');
-        btnFiltro.classList.remove('active');
-      }
-    });
-  });
-}
-
-function fecharFiltroMobile() {
-  document.querySelectorAll('.filtros').forEach(f => f.classList.remove('show'));
-  document.querySelectorAll('.btn-filtro-mobile').forEach(b => b.classList.remove('active'));
+  // Implementação anterior, se desejar manter
 }

@@ -80,30 +80,13 @@
               </div>
             </div>
 
-            <!-- JORNADA DE TRABALHO (agora dentro do funcionário) -->
+            <!-- Área de jornadas múltiplas -->
             <div class="form-group">
-              <label><i class="fas fa-calendar-day"></i> Dias da semana</label>
-              <div class="dias-botoes" id="diasBotoes">
-                <button type="button" class="dia-btn" data-dia="seg">Seg</button>
-                <button type="button" class="dia-btn" data-dia="ter">Ter</button>
-                <button type="button" class="dia-btn" data-dia="qua">Qua</button>
-                <button type="button" class="dia-btn" data-dia="qui">Qui</button>
-                <button type="button" class="dia-btn" data-dia="sex">Sex</button>
-                <button type="button" class="dia-btn" data-dia="sab">Sáb</button>
-                <button type="button" class="dia-btn" data-dia="dom">Dom</button>
+              <label><i class="fas fa-clock"></i> Jornadas de Trabalho</label>
+              <div id="jornadasContainer">
+                <!-- Aqui serão inseridos os blocos de jornada dinamicamente -->
               </div>
-              <input type="hidden" id="funcDias" value="">
-            </div>
-
-            <div class="form-row">
-              <div class="form-group">
-                <label><i class="fas fa-clock"></i> Início</label>
-                <input type="text" id="funcInicio" placeholder="Ex: 0800" maxlength="5" required>
-              </div>
-              <div class="form-group">
-                <label><i class="fas fa-clock"></i> Fim</label>
-                <input type="text" id="funcFim" placeholder="Ex: 1800" maxlength="5" required>
-              </div>
+              <button type="button" class="btn-add-jornada" id="addJornadaBtn"><i class="fas fa-plus-circle"></i> Adicionar outra jornada</button>
             </div>
 
             <div class="form-actions">
@@ -123,7 +106,7 @@
                   <th>CPF</th>
                   <th>Posto</th>
                   <th>Função</th>
-                  <th>Jornada</th>
+                  <th>Jornadas</th>
                   <th>Ações</th>
                 </tr>
               </thead>
