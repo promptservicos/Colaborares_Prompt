@@ -1,0 +1,324 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+body {
+  min-height: 100vh;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.login-container {
+  width: 100%;
+  max-width: 480px;
+}
+
+.login-card {
+  background: #ffffff;
+  border-radius: 2rem;
+  padding: 2.5rem 2rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(193, 4, 4, 0.1);
+  transition: transform 0.3s ease;
+  position: relative;
+}
+
+.login-card:hover {
+  transform: translateY(-4px);
+}
+
+.cabecalho {
+  text-align: center;
+  margin-bottom: 2rem;
+  position: relative;
+}
+
+.btn-voltar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: #666;
+  font-size: 1.2rem;
+  transition: color 0.2s, transform 0.2s;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #f5f5f5;
+  text-decoration: none;
+}
+
+.btn-voltar:hover {
+  color: #C10404;
+  background: #ffeeee;
+  transform: scale(1.05);
+}
+
+.icone-perfil {
+  font-size: 3.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.cabecalho h2 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.25rem;
+}
+
+.cabecalho p {
+  color: #777;
+  font-size: 0.9rem;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.campo label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #333;
+}
+
+.campo label i {
+  color: #C10404;
+  font-size: 1rem;
+  width: 1.2rem;
+}
+
+.campo input,
+.campo select {
+  padding: 0.85rem 1rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 1rem;
+  font-size: 1rem;
+  transition: all 0.2s;
+  background: #fafafa;
+}
+
+.campo select {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 1rem;
+}
+
+.campo input:focus,
+.campo select:focus {
+  outline: none;
+  border-color: #C10404;
+  box-shadow: 0 0 0 3px rgba(193, 4, 4, 0.1);
+  background: #ffffff;
+}
+
+.btn-login {
+  background: #C10404;
+  color: white;
+  border: none;
+  padding: 1rem;
+  border-radius: 3rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  margin-top: 0.5rem;
+  box-shadow: 0 8px 20px -8px rgba(193, 4, 4, 0.5);
+}
+
+.btn-login i {
+  font-size: 1.1rem;
+}
+
+.btn-login:hover {
+  background: #a00303;
+  transform: scale(1.02);
+  box-shadow: 0 10px 25px -6px #C10404;
+}
+
+.btn-login:active {
+  transform: scale(0.98);
+}
+
+.mensagem-info {
+  background: #e8f4fd;
+  color: #0b5e8a;
+  padding: 0.8rem 1rem;
+  border-radius: 1rem;
+  font-size: 0.9rem;
+  text-align: center;
+  border: 1px solid rgba(11, 94, 138, 0.2);
+}
+
+.mensagem-erro {
+  background: #fee9e9;
+  color: #C10404;
+  padding: 0.8rem 1rem;
+  border-radius: 1rem;
+  font-size: 0.9rem;
+  text-align: center;
+  border: 1px solid rgba(193, 4, 4, 0.2);
+}
+
+.mensagem-sucesso {
+  background: #e6f7e6;
+  color: #1e7e1e;
+  padding: 0.8rem 1rem;
+  border-radius: 1rem;
+  font-size: 0.9rem;
+  text-align: center;
+  border: 1px solid rgba(30, 126, 30, 0.2);
+}
+
+.resultado-card {
+  margin-top: 2rem;
+  border-top: 1px solid #f0f0f0;
+  padding-top: 1.5rem;
+}
+
+.divisoria {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.2rem;
+  color: #C10404;
+  font-weight: 500;
+}
+
+.divisoria span {
+  background: #ffeeee;
+  padding: 0.3rem 1rem;
+  border-radius: 2rem;
+  font-size: 0.9rem;
+}
+
+.dados-funcionario {
+  background: #f9f9f9;
+  border-radius: 1rem;
+  padding: 1.2rem;
+  margin-bottom: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.dado-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px dashed #e0e0e0;
+}
+
+.dado-item:last-child {
+  border-bottom: none;
+}
+
+.dado-icone {
+  width: 2rem;
+  height: 2rem;
+  background: #ffeeee;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #C10404;
+  font-size: 1rem;
+}
+
+.dado-conteudo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.dado-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: #888;
+  letter-spacing: 0.5px;
+}
+
+.dado-valor {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #1a1a1a;
+  word-break: break-word;
+}
+
+.btn-confirmar {
+  width: 100%;
+  background: #2e7d32;
+  color: white;
+  border: none;
+  padding: 1rem;
+  border-radius: 3rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 8px 20px -8px #2e7d32;
+}
+
+.btn-confirmar:hover {
+  background: #1b5e20;
+  transform: scale(1.02);
+  box-shadow: 0 10px 25px -6px #2e7d32;
+}
+
+.btn-confirmar:active {
+  transform: scale(0.98);
+}
+
+.btn-confirmar:disabled {
+  background: #bdbdbd;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+.rodape {
+  margin-top: 2rem;
+  text-align: center;
+  color: #aaa;
+  font-size: 0.8rem;
+  border-top: 1px solid #f0f0f0;
+  padding-top: 1.5rem;
+}
+
+/* Responsivo */
+@media (max-width: 480px) {
+  .login-card {
+    padding: 2rem 1.5rem;
+  }
+}

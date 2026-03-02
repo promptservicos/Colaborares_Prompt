@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login · Supervisor</title>
+  <!-- Font Awesome 6 (ícones minimalistas) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <!-- CSS específico -->
+  <link rel="stylesheet" href="loginsupervisor.css">
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-card">
+      <div class="cabecalho">
+        <a href="index.html" class="btn-voltar">
+          <i class="fas fa-arrow-left"></i>
+        </a>
+        <i class="fas fa-user-tie icone-perfil" style="color: #C10404;"></i>
+        <h2>Supervisor</h2>
+        <p>Acesse sua área administrativa</p>
+      </div>
+
+      <form id="loginForm" class="login-form">
+        <div class="campo">
+          <label for="email">
+            <i class="far fa-envelope"></i>
+            <span>E-mail</span>
+          </label>
+          <input type="email" id="email" name="email" placeholder="seu@email.com" required autocomplete="email">
+        </div>
+
+        <div class="campo">
+          <label for="password">
+            <i class="fas fa-lock"></i>
+            <span>Senha</span>
+          </label>
+          <input type="password" id="password" name="password" placeholder="••••••••" required autocomplete="current-password">
+        </div>
+
+        <div class="esqueci-senha">
+          <a href="#" id="forgotPasswordLink">Esqueceu a senha?</a>
+        </div>
+
+        <button type="submit" class="btn-login">
+          <i class="fas fa-sign-in-alt"></i> Entrar
+        </button>
+
+        <div id="mensagemErro" class="mensagem-erro" style="display: none;"></div>
+      </form>
+
+      <div class="rodape">
+        <p>Área restrita – apenas supervisores</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Script com type="module" para Firebase -->
+  <script type="module" src="loginsupervisor.js"></script>
+</body>
+</html>

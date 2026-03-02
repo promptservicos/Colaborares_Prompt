@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Supervisor · Painel</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="supervisor.css">
+</head>
+<body>
+  <div class="dashboard">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <i class="fas fa-user-tie" style="color: #C10404; font-size: 2.5rem;"></i>
+        <h2>Supervisor</h2>
+      </div>
+      <nav class="sidebar-nav">
+        <button class="nav-item active" data-tab="funcionarios">
+          <i class="fas fa-users"></i>
+          <span>Funcionários</span>
+        </button>
+        <button class="nav-item" data-tab="postos">
+          <i class="fas fa-map-marker-alt"></i>
+          <span>Postos</span>
+        </button>
+        <button class="nav-item" data-tab="jornadas">
+          <i class="fas fa-calendar-alt"></i>
+          <span>Jornada de Trabalho</span>
+        </button>
+        <button class="nav-item" data-tab="presenca">
+          <i class="fas fa-clock"></i>
+          <span>Registro de Presença</span>
+        </button>
+      </nav>
+      <button class="logout-btn" id="logoutBtn">
+        <i class="fas fa-sign-out-alt"></i> Sair
+      </button>
+    </aside>
+
+    <main class="content">
+      <!-- Aba Funcionários -->
+      <section id="tab-funcionarios" class="tab-content active">
+        <div class="content-header">
+          <h2><i class="fas fa-users" style="color: #C10404;"></i> Funcionários</h2>
+          <button class="btn-novo" id="novoFuncionarioBtn"><i class="fas fa-plus"></i> Novo Funcionário</button>
+        </div>
+
+        <!-- Filtros e pesquisa -->
+        <div class="filtros-bar">
+          <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchFuncionarios" placeholder="Pesquisar por nome...">
+          </div>
+          <div class="filtros">
+            <select id="filtroPostoFunc">
+              <option value="">Todos os postos</option>
+            </select>
+            <select id="filtroFuncaoFunc">
+              <option value="">Todas as funções</option>
+              <option value="Limpeza">Limpeza</option>
+              <option value="Portaria">Portaria</option>
+              <option value="Promotor">Promotor</option>
+              <option value="Segurança">Segurança</option>
+              <option value="Recepção">Recepção</option>
+              <option value="Supervisão">Supervisão</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-card" id="formFuncionario" style="display: none;">
+          <h3><i class="fas fa-user-plus"></i> <span id="funcFormTitle">Cadastrar Funcionário</span></h3>
+          <form id="funcionarioForm">
+            <input type="hidden" id="funcId">
+            <div class="form-group">
+              <label><i class="fas fa-user"></i> Nome</label>
+              <input type="text" id="funcNome" placeholder="Nome completo" required>
+            </div>
+            <div class="form-group">
+              <label><i class="fas fa-id-card"></i> CPF</label>
+              <input type="text" id="funcCpf" placeholder="000.000.000-00" required maxlength="14">
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label><i class="fas fa-briefcase"></i> Posto</label>
+                <select id="funcPosto" required>
+                  <option value="">Selecione</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label><i class="fas fa-tasks"></i> Função</label>
+                <select id="funcFuncao" required>
+                  <option value="">Selecione</option>
+                  <option value="Limpeza">Limpeza</option>
+                  <option value="Portaria">Portaria</option>
+                  <option value="Promotor">Promotor</option>
+                  <option value="Segurança">Segurança</option>
+                  <option value="Recepção">Recepção</option>
+                  <option value="Supervisão">Supervisão</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label><i class="fas fa-clock"></i> Jornada</label>
+              <select id="funcJornada" required>
+                <option value="">Selecione</option>
+              </select>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="btn-salvar"><i class="fas fa-save"></i> Salvar</button>
+              <button type="button" class="btn-cancelar" id="cancelarFuncionario"><i class="fas fa-times"></i> Cancelar</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="list-card">
+          <h3><i class="fas fa-list"></i> Funcionários Cadastrados</h3>
+          <div class="table-responsive">
+            <table id="tabelaFuncionarios">
+              <thead>
+                <tr>
+                  <th>Nome</th>
+                  <th>CPF</th>
+                  <th>Posto</th>
+                  <th>Função</th>
+                  <th>Jornada</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody id="funcionariosList">
+                <tr><td colspan="6" class="loading">Carregando...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Aba Postos -->
+      <section id="tab-postos" class="tab-content">
+        <div class="content-header">
+          <h2><i class="fas fa-map-marker-alt" style="color: #C10404;"></i> Postos de Trabalho</h2>
+          <button class="btn-novo" id="novoPostoBtn"><i class="fas fa-plus"></i> Novo Posto</button>
+        </div>
+
+        <div class="filtros-bar">
+          <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchPostos" placeholder="Pesquisar por nome...">
+          </div>
+        </div>
+
+        <div class="form-card" id="formPosto" style="display: none;">
+          <h3><i class="fas fa-plus-circle"></i> <span id="postoFormTitle">Cadastrar Posto</span></h3>
+          <form id="postoForm">
+            <input type="hidden" id="postoId">
+            <div class="form-group">
+              <label><i class="fas fa-tag"></i> Nome</label>
+              <input type="text" id="postoNome" placeholder="Ex: Recepção Principal" required>
+            </div>
+            <div class="form-group">
+              <label><i class="fas fa-map-pin"></i> Endereço</label>
+              <input type="text" id="postoEndereco" placeholder="Rua, número, bairro" required>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="btn-salvar"><i class="fas fa-save"></i> Salvar</button>
+              <button type="button" class="btn-cancelar" id="cancelarPosto"><i class="fas fa-times"></i> Cancelar</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="list-card">
+          <h3><i class="fas fa-list"></i> Postos Cadastrados</h3>
+          <div class="table-responsive">
+            <table id="tabelaPostos">
+              <thead>
+                <tr>
+                  <th>Nome</th>
+                  <th>Endereço</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody id="postosList">
+                <tr><td colspan="3" class="loading">Carregando...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Aba Jornadas -->
+      <section id="tab-jornadas" class="tab-content">
+        <div class="content-header">
+          <h2><i class="fas fa-calendar-alt" style="color: #C10404;"></i> Jornadas de Trabalho</h2>
+          <button class="btn-novo" id="novaJornadaBtn"><i class="fas fa-plus"></i> Nova Jornada</button>
+        </div>
+
+        <div class="filtros-bar">
+          <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchJornadas" placeholder="Pesquisar por descrição...">
+          </div>
+        </div>
+
+        <div class="form-card" id="formJornada" style="display: none;">
+          <h3><i class="fas fa-plus-circle"></i> <span id="jornadaFormTitle">Cadastrar Jornada</span></h3>
+          <form id="jornadaForm">
+            <input type="hidden" id="jornadaId">
+            <div class="form-group">
+              <label><i class="fas fa-calendar-day"></i> Dias da semana</label>
+              <div class="dias-checkbox">
+                <label><input type="checkbox" value="seg"> Seg</label>
+                <label><input type="checkbox" value="ter"> Ter</label>
+                <label><input type="checkbox" value="qua"> Qua</label>
+                <label><input type="checkbox" value="qui"> Qui</label>
+                <label><input type="checkbox" value="sex"> Sex</label>
+                <label><input type="checkbox" value="sab"> Sáb</label>
+                <label><input type="checkbox" value="dom"> Dom</label>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label><i class="fas fa-clock"></i> Início</label>
+                <input type="time" id="jornadaInicio" required>
+              </div>
+              <div class="form-group">
+                <label><i class="fas fa-clock"></i> Fim</label>
+                <input type="time" id="jornadaFim" required>
+              </div>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="btn-salvar"><i class="fas fa-save"></i> Salvar</button>
+              <button type="button" class="btn-cancelar" id="cancelarJornada"><i class="fas fa-times"></i> Cancelar</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="list-card">
+          <h3><i class="fas fa-list"></i> Jornadas Cadastradas</h3>
+          <div class="table-responsive">
+            <table id="tabelaJornadas">
+              <thead>
+                <tr>
+                  <th>Descrição</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody id="jornadasList">
+                <tr><td colspan="2" class="loading">Carregando...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Aba Registro de Presença -->
+      <section id="tab-presenca" class="tab-content">
+        <div class="content-header">
+          <h2><i class="fas fa-clock" style="color: #C10404;"></i> Registro de Presença · <span id="dataHoje"></span></h2>
+        </div>
+
+        <div class="filtros-bar">
+          <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchPresenca" placeholder="Pesquisar por nome...">
+          </div>
+          <div class="filtros">
+            <select id="filtroPostoPresenca">
+              <option value="">Todos os postos</option>
+            </select>
+            <select id="filtroFuncaoPresenca">
+              <option value="">Todas as funções</option>
+              <option value="Limpeza">Limpeza</option>
+              <option value="Portaria">Portaria</option>
+              <option value="Promotor">Promotor</option>
+              <option value="Segurança">Segurança</option>
+              <option value="Recepção">Recepção</option>
+              <option value="Supervisão">Supervisão</option>
+            </select>
+            <select id="filtroStatusPresenca">
+              <option value="">Todos os status</option>
+              <option value="Aguardando">Aguardando</option>
+              <option value="Folga">Folga</option>
+              <option value="Confirmado">Confirmado</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="list-card">
+          <h3><i class="fas fa-calendar-check"></i> Situação de Hoje</h3>
+          <div class="table-responsive">
+            <table id="tabelaPresenca">
+              <thead>
+                <tr>
+                  <th>Funcionário</th>
+                  <th>Posto</th>
+                  <th>Função</th>
+                  <th>Jornada</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="presencaList">
+                <tr><td colspan="5" class="loading">Carregando...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script type="module" src="supervisor.js"></script>
+</body>
+</html>

@@ -1,0 +1,143 @@
+/* style.css */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+body {
+  min-height: 100vh;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.container {
+  width: 100%;
+  max-width: 900px;
+}
+
+.acesso-card {
+  background: #ffffff;
+  border-radius: 2rem;
+  padding: 3rem 2rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(193, 4, 4, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.acesso-card:hover {
+  transform: translateY(-4px);
+}
+
+.titulo {
+  font-size: 2.2rem;
+  font-weight: 500;
+  color: #1a1a1a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.02em;
+}
+
+.titulo i {
+  font-size: 2.4rem;
+}
+
+.subtitulo {
+  text-align: center;
+  color: #666;
+  font-size: 1rem;
+  font-weight: 400;
+  margin-bottom: 3rem;
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 1.5rem;
+}
+
+.botoes-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  justify-content: center;
+}
+
+.botao-perfil {
+  flex: 1 1 260px;
+  max-width: 320px;
+  background: #fafafa;
+  border-radius: 1.5rem;
+  padding: 2rem 1.5rem;
+  text-decoration: none;
+  color: #1a1a1a;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.75rem;
+  border: 1px solid #eeeeee;
+  transition: all 0.25s cubic-bezier(0.2, 0, 0, 1);
+  box-shadow: 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.botao-perfil i {
+  font-size: 3.5rem;
+  color: #C10404;
+  margin-bottom: 0.25rem;
+  transition: transform 0.2s ease;
+}
+
+.botao-perfil span {
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.botao-perfil small {
+  font-size: 0.85rem;
+  color: #777;
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+/* Efeitos hover */
+.botao-perfil:hover {
+  background: #ffffff;
+  border-color: #C10404;
+  box-shadow: 0 20px 30px -10px rgba(193, 4, 4, 0.2);
+  transform: scale(1.02);
+}
+
+.botao-perfil:hover i {
+  transform: scale(1.1);
+}
+
+.botao-perfil.colaborador:hover i {
+  color: #C10404;
+}
+
+.botao-perfil.supervisor:hover i {
+  color: #C10404;
+}
+
+/* Ajuste para mobile */
+@media (max-width: 600px) {
+  .acesso-card {
+    padding: 2rem 1.5rem;
+  }
+  
+  .titulo {
+    font-size: 1.8rem;
+  }
+  
+  .botao-perfil {
+    max-width: 100%;
+  }
+  
+  .botoes-wrapper {
+    gap: 1rem;
+  }
+}

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Colaborador · Acesso</title>
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <!-- CSS específico -->
+  <link rel="stylesheet" href="colaborador.css">
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-card">
+      <div class="cabecalho">
+        <a href="index.html" class="btn-voltar">
+          <i class="fas fa-arrow-left"></i>
+        </a>
+        <i class="fas fa-user-hard-hat icone-perfil" style="color: #C10404;"></i>
+        <h2>Colaborador</h2>
+        <p>Confirme sua presença no posto</p>
+      </div>
+
+      <!-- Formulário de busca -->
+      <form id="buscaForm" class="login-form">
+        <div class="campo">
+          <label for="postoSelect">
+            <i class="fas fa-map-marker-alt"></i>
+            <span>Selecione o posto</span>
+          </label>
+          <select id="postoSelect" required>
+            <option value="">Carregando postos...</option>
+          </select>
+        </div>
+
+        <div class="campo">
+          <label for="cpfInput">
+            <i class="fas fa-id-card"></i>
+            <span>Digite seu CPF</span>
+          </label>
+          <input type="text" id="cpfInput" placeholder="000.000.000-00" required maxlength="14">
+        </div>
+
+        <button type="submit" class="btn-login" id="btnBuscar">
+          <i class="fas fa-search"></i> Buscar
+        </button>
+
+        <div id="mensagemInfo" class="mensagem-info" style="display: none;"></div>
+      </form>
+
+      <!-- Área de resultado (exibida quando funcionário encontrado) -->
+      <div id="resultadoArea" class="resultado-card" style="display: none;">
+        <div class="divisoria">
+          <span><i class="fas fa-user-check"></i> Dados do colaborador</span>
+        </div>
+        
+        <div class="dados-funcionario">
+          <div class="dado-item">
+            <div class="dado-icone"><i class="fas fa-user"></i></div>
+            <div class="dado-conteudo">
+              <span class="dado-label">Nome</span>
+              <span class="dado-valor" id="nomeFunc">—</span>
+            </div>
+          </div>
+          
+          <div class="dado-item">
+            <div class="dado-icone"><i class="fas fa-briefcase"></i></div>
+            <div class="dado-conteudo">
+              <span class="dado-label">Função</span>
+              <span class="dado-valor" id="funcaoFunc">—</span>
+            </div>
+          </div>
+          
+          <div class="dado-item">
+            <div class="dado-icone"><i class="fas fa-clock"></i></div>
+            <div class="dado-conteudo">
+              <span class="dado-label">Jornada</span>
+              <span class="dado-valor" id="jornadaFunc">—</span>
+            </div>
+          </div>
+          
+          <div class="dado-item">
+            <div class="dado-icone"><i class="fas fa-map-pin"></i></div>
+            <div class="dado-conteudo">
+              <span class="dado-label">Posto</span>
+              <span class="dado-valor" id="postoFunc">—</span>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn-confirmar" id="btnConfirmar">
+          <i class="fas fa-check-circle"></i> Confirmar presença
+        </button>
+      </div>
+
+      <div class="rodape">
+        <p>Área do colaborador – registro de presença</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Script com type="module" para Firebase -->
+  <script type="module" src="colaborador.js"></script>
+</body>
+</html>

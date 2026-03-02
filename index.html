@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ponto · Acesso</title>
+  <!-- Font Awesome 6 (ícones minimalistas) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <!-- CSS principal -->
+  <link rel="stylesheet" href="index.css">
+</head>
+<body>
+  <div class="container">
+    <div class="acesso-card">
+      <h1 class="titulo">
+        <i class="far fa-clock" style="color: #C10404; margin-right: 0.5rem;"></i> 
+        Controle de Ponto
+      </h1>
+      <p class="subtitulo">Selecione seu perfil para continuar</p>
+
+      <div class="botoes-wrapper">
+        <a href="colaborador.html" class="botao-perfil colaborador">
+          <i class="fas fa-user-circle"></i>
+          <span>Colaborador</span>
+          <small>Acesso ao registro de ponto</small>
+        </a>
+
+        <a href="loginsupervisor.html" class="botao-perfil supervisor">
+          <i class="fas fa-user-tie"></i>
+          <span>Supervisor</span>
+          <small>Administração e relatórios</small>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Script com a inicialização do Firebase (para uso futuro) -->
+  <script type="module" src="index.js"></script>
+</body>
+</html>
